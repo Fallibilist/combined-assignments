@@ -24,25 +24,28 @@ public class Fibonacci {
      * @throws IllegalArgumentException if the given index is less than zero
      */
     public static int atIndex(int i) throws IllegalArgumentException {
-    	int sum = 0;
-    	int lastFib = 1;
-    	int beforeLastFib = 1;
+    	FibonacciTracker tracker = new FibonacciTracker();
     	
     	if(i < 0) {
     		throw new IllegalArgumentException();
     	}
     	
-        if(i == 0 || i == 1) {
+        if(i == 0) {
         	return 1;
         }
+
+    	tracker
+    		.setCurrentFibNumber(0)
+    		.setOneBeforeCurrentFibNumber(1)
+    		.setTwoBeforeCurrentFibNumber(0);
         
-        for(int index = 1; index < i; index++) {
-        	sum = lastFib + beforeLastFib;
-        	beforeLastFib = lastFib;
-        	lastFib = sum;
+        for(int index = 0; index < i; index++) {
+        	tracker.setCurrentFibNumber(tracker.sumLastTwoNumbers());
+        	tracker.setTwoBeforeCurrentFibNumber(tracker.getOneBeforeCurrentFibNumber());
+        	tracker.setOneBeforeCurrentFibNumber(tracker.getCurrentFibNumber());
         }
         		
-        return sum;
+        return tracker.getCurrentFibNumber();
     }
 
     /**
@@ -56,11 +59,13 @@ public class Fibonacci {
      *                                  given end is less than the given start
      */
     public static int[] slice(int start, int end) throws IllegalArgumentException {
-        int[] fibSequence = new int[end - start];
+        int[] fibSequence;
         
-        if(start > end) {
+        if(start > end || end < 0) {
         	throw new IllegalArgumentException();
         }
+        
+        fibSequence = new int[end - start];
         
         for(int index = 0; index < fibSequence.length; index++) {
         	fibSequence[index] = atIndex(start);
@@ -79,5 +84,9 @@ public class Fibonacci {
      */
     public static int[] fibonacci(int count) throws IllegalArgumentException {
         return slice(0, count);
+    }
+    
+    public static void main(String[] args) {
+    	System.out.println(Fibonacci.atIndex(100));
     }
 }

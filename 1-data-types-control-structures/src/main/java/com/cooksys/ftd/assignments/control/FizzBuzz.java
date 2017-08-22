@@ -75,10 +75,12 @@ public class FizzBuzz {
     	int numberOfMessages = 0;
     	int maxMessagesIndex = 0;
     	
+    	// Checks to ensure that the range of numbers is valid
     	if(start > end) {
     		throw new IllegalArgumentException();
     	}
     	
+    	// Populates the array with each non-null result
     	for(int messageNumber = start; messageNumber < end; messageNumber++) {
     		message = message(messageNumber);
     		if(message != null) {
@@ -88,6 +90,7 @@ public class FizzBuzz {
     		}
     	}
     	
+    	// Removes the excess indexes from the end of array by copying the elements into a new array
     	arrayOfMessages = new String[numberOfMessages];
         for(int index = 0; index < arrayOfMessages.length; index++) {
         	arrayOfMessages[index] = arrayOfMaxMessages[index];
@@ -103,6 +106,7 @@ public class FizzBuzz {
     public static void main(String[] args) {
     	String[] messages = messages(1, 116);
     	
+    	// Iterates through each message and prints it to the console
         for(String message: messages) {
         	System.out.println(message);
         }
