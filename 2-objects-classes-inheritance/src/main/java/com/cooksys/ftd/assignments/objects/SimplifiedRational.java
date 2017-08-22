@@ -1,7 +1,5 @@
 package com.cooksys.ftd.assignments.objects;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class SimplifiedRational implements IRational {
 	private int numerator;
 	private int denominator;
@@ -14,23 +12,24 @@ public class SimplifiedRational implements IRational {
      * @return the greatest common denominator, or shared factor, of `a` and `b`
      * @throws IllegalArgumentException if a <= 0 or b < 0
      */
-    public static int gcd(int a, int b) throws IllegalArgumentException {
-        if(a <= 0 || b < 0) {
+    public static int gcd(int numerator, int denominator) throws IllegalArgumentException {
+    	if(numerator <= 0 || denominator < 0) {
         	throw new IllegalArgumentException();
         }
         
-        if( a == 0) {
-        	return b;
+        if( numerator == 0) {
+        	return denominator;
         }
         
-        while(b != 0) {
-        	if(a > b) {
-        		a= a - b;
+        // Euclidean Method of finding the GCD
+        while(denominator != 0) {
+        	if(numerator > denominator) {
+        		numerator = numerator - denominator;
         	} else {
-        		b = b - a;
+        		denominator = denominator - numerator;
         	}
         }
-        return a;
+        return numerator;
     }
 
     /**

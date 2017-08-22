@@ -1,7 +1,5 @@
 package com.cooksys.ftd.assignments.control;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * The Fibonacci sequence is simply and recursively defined: the first two elements are `1`, and
  * every other element is equal to the sum of its two preceding elements. For example:
@@ -23,23 +21,24 @@ public class Fibonacci {
      * @return the calculated element
      * @throws IllegalArgumentException if the given index is less than zero
      */
-    public static int atIndex(int i) throws IllegalArgumentException {
-    	FibonacciTracker tracker = new FibonacciTracker();
+    public static int atIndex(int index) throws IllegalArgumentException {
+    	FibonacciTracker tracker;
     	
-    	if(i < 0) {
+    	if(index < 0) {
     		throw new IllegalArgumentException();
     	}
     	
-        if(i == 0) {
+        if(index == 0) {
         	return 1;
         }
 
+        tracker = new FibonacciTracker();
     	tracker
     		.setCurrentFibNumber(0)
     		.setOneBeforeCurrentFibNumber(1)
     		.setTwoBeforeCurrentFibNumber(0);
         
-        for(int index = 0; index < i; index++) {
+        for(int incrementer = 0; incrementer < index; incrementer++) {
         	tracker.setCurrentFibNumber(tracker.sumLastTwoNumbers());
         	tracker.setTwoBeforeCurrentFibNumber(tracker.getOneBeforeCurrentFibNumber());
         	tracker.setOneBeforeCurrentFibNumber(tracker.getCurrentFibNumber());
@@ -84,9 +83,5 @@ public class Fibonacci {
      */
     public static int[] fibonacci(int count) throws IllegalArgumentException {
         return slice(0, count);
-    }
-    
-    public static void main(String[] args) {
-    	System.out.println(Fibonacci.atIndex(100));
     }
 }
