@@ -1,15 +1,21 @@
 package com.cooksys.ftd.assignments.collections.model;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class WageSlave implements Capitalist {
+	
+	private String name;
+	private int salary;
+	private FatCat owner;
 
     public WageSlave(String name, int salary) {
-        throw new NotImplementedException();
+        this.name = name;
+        this.salary = salary;
+        this.owner = null;
     }
 
     public WageSlave(String name, int salary, FatCat owner) {
-        throw new NotImplementedException();
+        this.name = name;
+        this.salary = salary;
+        this.owner = owner;
     }
 
     /**
@@ -17,7 +23,7 @@ public class WageSlave implements Capitalist {
      */
     @Override
     public String getName() {
-        throw new NotImplementedException();
+        return name;
     }
 
     /**
@@ -25,7 +31,7 @@ public class WageSlave implements Capitalist {
      */
     @Override
     public int getSalary() {
-        throw new NotImplementedException();
+        return salary;
     }
 
     /**
@@ -33,7 +39,11 @@ public class WageSlave implements Capitalist {
      */
     @Override
     public boolean hasParent() {
-        throw new NotImplementedException();
+        if(owner != null) {
+        	return true;
+        } else {
+        	return false;
+        }
     }
 
     /**
@@ -41,6 +51,57 @@ public class WageSlave implements Capitalist {
      */
     @Override
     public FatCat getParent() {
-        throw new NotImplementedException();
+    	if(hasParent()) {
+    		return owner;
+    	} else {
+    		return null;
+    	}
+    }
+    
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+		result = prime * result + salary;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		WageSlave other = (WageSlave) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (owner == null) {
+			if (other.owner != null)
+				return false;
+		} else if (!owner.equals(other.owner))
+			return false;
+		if (salary != other.salary)
+			return false;
+		return true;
+	}
+    
+    public int hashFamily() {
+    	if(hasParent()) {
+    		return getParent().hashFamily();
+    	} else {
+    		return hashCode();
+    	}
+    }
+    
+    @Override
+    public WageSlave clone() {
+    	return new WageSlave(name, salary, owner);
     }
 }
