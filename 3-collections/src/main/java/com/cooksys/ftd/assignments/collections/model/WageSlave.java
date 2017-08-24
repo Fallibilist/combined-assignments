@@ -99,9 +99,4 @@ public class WageSlave implements Capitalist {
     		return hashCode();
     	}
     }
-    
-    @Override
-    public WageSlave clone() {
-    	return new WageSlave(name, salary, owner);
-    }
 }

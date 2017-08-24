@@ -98,9 +98,4 @@ public class FatCat implements Capitalist {
     		return hashCode();
     	}
     }
-    
-    @Override
-    public FatCat clone() {
-    	return new FatCat(name, salary, owner);
-    }
 }

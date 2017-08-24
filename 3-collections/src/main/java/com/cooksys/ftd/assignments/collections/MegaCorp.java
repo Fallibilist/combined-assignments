@@ -9,10 +9,10 @@ import java.util.*;
 
 public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
 	
-	private Map<Integer, Map<Integer, Capitalist>> mapOfTrees;
+	private Map<Integer, Set<Capitalist>> mapOfTrees;
 	
     public MegaCorp() {
-    	mapOfTrees = new HashMap<Integer, Map<Integer, Capitalist>>();
+    	mapOfTrees = new HashMap<Integer, Set<Capitalist>>();
 	}
 
 	/**
@@ -35,30 +35,32 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public boolean add(Capitalist capitalist) {
-    	if(capitalist == null || has(capitalist)) {
+    	Integer hashFamily;
+    	
+    	if(capitalist == null) {
     		return false;
-    	} else if(capitalist.hasParent()) {
-    		if(has(capitalist.getParent())) {
-    			mapOfTrees.get(capitalist.hashFamily()).put(capitalist.hashCode(), capitalist);
-    			return true;
-    		} else {
-    			mapOfTrees.put(capitalist.hashFamily(), new HashMap<Integer, Capitalist>());
-    			add(capitalist.getParent());
-    			mapOfTrees.get(capitalist.hashFamily()).put(capitalist.hashCode(), capitalist);
-    			return true;
-    		}
     	} else {
-    		if(capitalist instanceof FatCat) {
-    			if(mapOfTrees.get(capitalist.hashFamily()) != null) {
-    				mapOfTrees.get(capitalist.hashFamily()).put(capitalist.hashCode(), capitalist);
-    				return true;
-    			} else {
-        			mapOfTrees.put(capitalist.hashFamily(), new HashMap<Integer, Capitalist>());
-    				mapOfTrees.get(capitalist.hashFamily()).put(capitalist.hashCode(), capitalist);
-    				return true;
-    			}
+    		hashFamily = capitalist.hashFamily();
+    		
+    		if(capitalist.hasParent()) {
+	    		if(has(capitalist.getParent())) {
+	    			return mapOfTrees.get(hashFamily).add(capitalist);
+	    		} else {
+	    			mapOfTrees.put(hashFamily, new HashSet<Capitalist>());
+	    			add(capitalist.getParent());
+	    			return mapOfTrees.get(hashFamily).add(capitalist);
+	    		}
     		} else {
-    			return false;
+    			if(capitalist instanceof FatCat) {
+	    			if(mapOfTrees.get(hashFamily) != null) {
+	    				return mapOfTrees.get(hashFamily).add(capitalist);
+	    			} else {
+	        			mapOfTrees.put(hashFamily, new HashSet<Capitalist>());
+	    				return mapOfTrees.get(hashFamily).add(capitalist);
+	    			}
+	    		} else {
+	    			return false;
+	    		}
     		}
     	}
     }
@@ -69,8 +71,10 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public boolean has(Capitalist capitalist) {
-    	if(mapOfTrees.get(capitalist.hashFamily()) != null){
-            return mapOfTrees.get(capitalist.hashFamily()).containsKey(capitalist.hashCode());
+    	Integer hashFamily = capitalist.hashFamily();
+    	
+    	if(mapOfTrees.get(hashFamily) != null){
+            return mapOfTrees.get(hashFamily).contains(capitalist);
     	} else {
     		return false;
     	}
@@ -84,8 +88,8 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     public Set<Capitalist> getElements() {
     	Set<Capitalist> setOfCapitalists = new HashSet<Capitalist>();
     	
-		(mapOfTrees.values()).forEach(tree -> {
-			(tree.values()).forEach(capitalist -> {
+		mapOfTrees.values().forEach(tree -> {
+			tree.forEach(capitalist -> {
 				setOfCapitalists.add((Capitalist)capitalist);
 	    	});
     	});
