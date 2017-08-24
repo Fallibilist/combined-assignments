@@ -9,7 +9,6 @@ public class WageSlave implements Capitalist {
     public WageSlave(String name, int salary) {
         this.name = name;
         this.salary = salary;
-        this.owner = null;
     }
 
     public WageSlave(String name, int salary, FatCat owner) {
@@ -39,11 +38,7 @@ public class WageSlave implements Capitalist {
      */
     @Override
     public boolean hasParent() {
-        if(owner != null) {
-        	return true;
-        } else {
-        	return false;
-        }
+        return owner != null ? true : false;
     }
 
     /**
@@ -51,11 +46,7 @@ public class WageSlave implements Capitalist {
      */
     @Override
     public FatCat getParent() {
-    	if(hasParent()) {
-    		return owner;
-    	} else {
-    		return null;
-    	}
+    	return hasParent() ? owner : null;
     }
     
     @Override
@@ -70,33 +61,46 @@ public class WageSlave implements Capitalist {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		WageSlave other;
+		
+		if(this == obj) {
 			return true;
-		if (obj == null)
+		}
+		
+		if(obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		
+		if(getClass() != obj.getClass()) {
 			return false;
-		WageSlave other = (WageSlave) obj;
-		if (name == null) {
-			if (other.name != null)
+		}
+		
+		other = (WageSlave) obj;
+		
+		if(name == null) {
+			if(other.name != null) {
 				return false;
-		} else if (!name.equals(other.name))
+			}
+		} else if(!name.equals(other.name)) {
 			return false;
+		}
+		
 		if (owner == null) {
-			if (other.owner != null)
+			if(other.owner != null) {
 				return false;
-		} else if (!owner.equals(other.owner))
+			}
+		} else if(!owner.equals(other.owner)) {
 			return false;
-		if (salary != other.salary)
+		}
+		
+		if (salary != other.salary) {
 			return false;
+		}
+		
 		return true;
 	}
     
     public int hashFamily() {
-    	if(hasParent()) {
-    		return getParent().hashFamily();
-    	} else {
-    		return hashCode();
-    	}
+    	return hasParent() ? getParent().hashFamily() : hashCode();
     }
 }

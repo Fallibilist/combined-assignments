@@ -47,7 +47,7 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
 	    			return mapOfTrees.get(hashFamily).add(capitalist);
 	    		} else {
 	    			mapOfTrees.put(hashFamily, new HashSet<Capitalist>());
-	    			add(capitalist.getParent());
+	    			add(capitalist.getParent(), hashFamily);
 	    			return mapOfTrees.get(hashFamily).add(capitalist);
 	    		}
     		} else {
@@ -65,6 +65,21 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     	}
     }
 
+    // Overloaded add method that checks parent nodes
+    public boolean add(Capitalist capitalist, Integer hashFamily) {
+    	if(capitalist.hasParent()) {
+	    	if(has(capitalist.getParent())) {
+	    		return mapOfTrees.get(hashFamily).add(capitalist);
+	    	} else {
+	    		mapOfTrees.put(hashFamily, new HashSet<Capitalist>());
+	    		add(capitalist.getParent(), hashFamily);
+	    		return mapOfTrees.get(hashFamily).add(capitalist);
+	    	}
+    	} else {
+	    	return mapOfTrees.get(hashFamily).add(capitalist);
+    	}
+    }
+
     /**
      * @param capitalist the element to search for
      * @return true if the element has been added to the hierarchy, false otherwise
@@ -73,11 +88,7 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     public boolean has(Capitalist capitalist) {
     	Integer hashFamily = capitalist.hashFamily();
     	
-    	if(mapOfTrees.get(hashFamily) != null){
-            return mapOfTrees.get(hashFamily).contains(capitalist);
-    	} else {
-    		return false;
-    	}
+    	return mapOfTrees.get(hashFamily) != null ? mapOfTrees.get(hashFamily).contains(capitalist) : false;
     }
 
     /**
@@ -126,12 +137,11 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     	
     	getElements().forEach(potentialChild -> 
 		{
-			if(potentialChild.hasParent()) {
-				if(potentialChild.getParent() == fatCat) {
-					setOfChildren.add(potentialChild);
-				}
+			if(potentialChild.hasParent() && potentialChild.getParent() == fatCat) {
+				setOfChildren.add(potentialChild);
 			}
 		});
+    	
     	return setOfChildren;
     }
 
