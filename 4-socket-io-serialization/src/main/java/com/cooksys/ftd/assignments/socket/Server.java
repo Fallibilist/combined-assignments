@@ -1,8 +1,22 @@
 package com.cooksys.ftd.assignments.socket;
 
+import com.cooksys.ftd.assignments.socket.model.Config;
+import com.cooksys.ftd.assignments.socket.model.LocalConfig;
 import com.cooksys.ftd.assignments.socket.model.Student;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.BindException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 public class Server extends Utils {
 
@@ -12,9 +26,42 @@ public class Server extends Utils {
      * @param studentFilePath the file path from which to read the student config file
      * @param jaxb the JAXB context to use during unmarshalling
      * @return a {@link Student} object unmarshalled from the given file path
+     * @throws IOException 
      */
     public static Student loadStudent(String studentFilePath, JAXBContext jaxb) {
-        return null; // TODO
+    	try {
+			Unmarshaller jaxbUnmarshaller = jaxb.createUnmarshaller();
+		    File studentXML = new File(studentFilePath);
+	
+		    if(studentXML.createNewFile()) {
+		    	Marshaller jaxbMarshaller = jaxb.createMarshaller();
+		    	
+		    	Student defaultStudent = new Student();
+	
+		    	defaultStudent.setFirstName("Greg");
+		    	defaultStudent.setLastName("Hill");
+		    	defaultStudent.setFavoriteIDE("Eclipse");
+		    	defaultStudent.setFavoriteLanguage("Java");
+		    	defaultStudent.setFavoriteParadigm("Object-Oriented");
+	
+				jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	    		jaxbMarshaller.marshal(defaultStudent, studentXML);
+	    		System.out.println("\nNo students found! Default student created: ");
+	    		jaxbMarshaller.marshal(defaultStudent, System.out);
+		    }
+		    
+			return (Student) jaxbUnmarshaller.unmarshal(studentXML);
+		} catch (JAXBException jaxbException) {
+			System.out.println("Error with JAXB in loadStudent() method: ");
+			jaxbException.printStackTrace();
+			System.exit(1);
+			return null;
+		} catch (IOException ioException) {
+			System.out.println("Error with operations on student file in loadStudent() method: ");
+			ioException.printStackTrace();
+			System.exit(1);
+			return null;
+		}
     }
 
     /**
@@ -30,6 +77,46 @@ public class Server extends Utils {
      * Following this transaction, the server may shut down or listen for more connections.
      */
     public static void main(String[] args) {
-        // TODO
+    	JAXBContext jaxb;
+    	Config config;
+    	LocalConfig localConfig;
+    	
+    	try {
+			jaxb = Utils.createJAXBContext();
+		} catch (JAXBException e2) {
+			jaxb = null;
+			System.out.println("Error creating JAXBContext with Config and Student classes! You're out of luck!");
+			System.exit(1);
+		}
+    	
+    	while(true) {
+		config = Utils.loadConfig("config/config.xml", jaxb);
+		localConfig = config.getLocal();
+		if(localConfig != null) {
+	    	try (ServerSocket serverSocket = new ServerSocket(localConfig.getPort());
+		    		Socket client = serverSocket.accept();
+	    			OutputStream outputStream = client.getOutputStream();
+	    	){
+	    		Student student = Server.loadStudent(config.getStudentFilePath(), jaxb);
+	    		Marshaller jaxbMarshaller = jaxb.createMarshaller();
+
+				jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	    		jaxbMarshaller.marshal(student, outputStream);
+			} catch (BindException tooManyServers) {
+				System.out.println("Server already running!");
+				System.exit(0);
+			} catch (IOException ioException) {
+				System.out.println("Error with operations on socket server side: ");
+				ioException.printStackTrace();
+				System.exit(1);
+			}  catch (JAXBException jaxbException) {
+				System.out.println("Error with JAXB on server: ");
+				jaxbException.printStackTrace();
+				System.exit(1);
+			}
+		} else {
+			System.out.println("null");
+		}
+    	}
     }
 }
